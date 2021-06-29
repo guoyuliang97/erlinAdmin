@@ -1,0 +1,56 @@
+*{
+    margin:0;
+    padding:0;
+}
+.samecolor{
+    color:#ff5511
+}
+.sameBgColor{
+  background-color: #ff5511;
+}
+.sameContent{
+    text-align:left;
+    width:94%;
+    height:100%;
+    padding: 2% 2%;
+    margin-top: 40px;
+}
+.sameMargin{
+    margin: 20px 0;
+}
+.sameLeft{
+    margin-left:20px;
+}
+
+.samePosition{
+    position: fixed;
+    top:0;left:0;
+    right:0;
+    bottom:0;
+    z-index:10;
+    background-color: rgba(0,0,0,.5);
+}
+.textCenter{
+    text-align:center
+}
+
+
+.contentTitle{
+    font-weight: bold;
+    font-size:20px;
+}
+.flexBetween{
+    display: flex;
+    justify-content: space-between;
+}
+.flexStart{
+    display: flex;
+    justify-content: flex-start;
+}
+.flexWrap{
+    display: flex;
+    flex-wrap: wrap;
+}
+.positionFix{
+    position: fixed;
+}

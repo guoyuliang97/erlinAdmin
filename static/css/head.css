@@ -1,0 +1,34 @@
+.head{
+    position: fixed;
+    height: 60px;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    min-width: 1080px;
+  }
+  .head>p{
+    line-height: 60px;
+    color: white;
+    margin-left: 20px;
+    font-size: 22px;
+  }
+  .head>div{
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-start;
+    color: #ffffff;
+    line-height: 60px;
+  }
+  .head>div>p{
+    margin-left: 15px;
+  }
+  .head_icon{
+    font-size:20px;
+    cursor: pointer;
+  }
+  .msg_detail:hover{
+      color: #008489;
+      border-bottom: 1px solid #008489;
+  }
