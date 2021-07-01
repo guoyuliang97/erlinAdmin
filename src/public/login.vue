@@ -144,17 +144,15 @@ export default {
                 this.$message({type:'error',message:'请输入密码！'})
             }else{
             var params = {
-                user: this.loginForm.user_name,
+                username: this.loginForm.user_name,
                 password: this.loginForm.password
             }
-            console.log(params)
-            this.$post('/api/auth/login',params)
+            this.$post('/sys/auth/login',params)
                 .then(res=>{
                     if(res.data.code == 200){
-
-                        // localStorage.setItem('elToken',res.data.data)
-                        // localStorage.setItem('name',res.data.data.username)
-                        // this.$router.push('/')
+                        this.$router.push('/')
+                        localStorage.setItem('elToken',res.data.data.tokenHead + res.data.data.token)
+                        localStorage.setItem('name',this.loginForm.user_name)
                     }
                 })
                 .catch(err=>{

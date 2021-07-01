@@ -1,6 +1,6 @@
 import axios from './request.js'
 import Global from './api.js'
-var baseUrl = '/myApi'
+var baseUrl =  '/myApi'
 export  function post(url,params){
   return new Promise((resolve,reject) => {
     axios.post(baseUrl + url , params).then(

@@ -11,13 +11,10 @@ axios.interceptors.request.use(
     LoadingServe = Loading.service({fullscreen:true})
     let token =localStorage.getItem('elToken')
     if (token) {
-      config.headers = {
-        'Authorization' : token,
-       }
+      config.headers['Authorization'] = token
+     
     }
-    config.headers = {
-      'Content-Type' : "application/x-www-form-urlencoded"
-    }
+
     return config
   },
   error => {

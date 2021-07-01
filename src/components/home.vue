@@ -8,7 +8,7 @@
               class="el-menu-vertical-demo"
               background-color="#008489"
               text-color="#fff"
-              active-text-color="#ffd04b">
+              active-text-color="#ff5511">
               <div v-for="(item,index) in menuList">
                  <div v-if="!item.children">
                    <el-menu-item :index="item.index" @click="changeRouter(item,index)">

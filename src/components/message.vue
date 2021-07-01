@@ -1,7 +1,6 @@
 <template>
   <div class="sameContent" >
-    <p class="contentTitle">留言管理</p>
-    <p class="sameMargin" style="color:#999999">注：意向等级A,B,C,D 依次等级递减</p>
+    <p class="contentTitle">商家审核管理</p>
     <div class="sameMargin sameLeft">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <el-form-item label="电话">
@@ -21,22 +20,20 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="getMessage">查询</el-button>
+                <el-button type="primary">查询</el-button>
             </el-form-item>
         </el-form>
     </div>
-    <div class="sameMargin">  
-        <el-button :disabled="isChoose" @click="deletMessage" type="danger" icon="el-icon-delete" ></el-button>
-        <el-button @click="exprot" type="primary">导出<i class="el-icon-download"></i></el-button>
+    <div class="sameMargin">
+        <el-button :disabled="isChoose"  type="danger" icon="el-icon-delete" ></el-button>
+        <el-button  type="primary">导出<i class="el-icon-download"></i></el-button>
     </div>
-    <div> 
+    <div>
         <el-table
             :data="tableData"
             ref="multipleTable"
             border
             highlight-current-row
-            @select="select"
-            @select-all="select"
             style="width:100%"
             >
             <el-table-column
@@ -66,7 +63,7 @@
             prop="address"
             label="城市"
             >
-            
+
             </el-table-column>
             <el-table-column
             label="选择项目"
@@ -113,7 +110,7 @@
             style="z-index:1"
             >
             <template slot-scope="scope">
-                <el-button @click="remake(scope.row)" type="text">编辑</el-button>
+                <el-button type="text">编辑</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -121,11 +118,9 @@
     <div class="sameMargin" style="text-align:right">
         <el-pagination
       @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[10, 20, 30, 40]"
       :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
+      layout="total, prev, pager, next"
       :total="total">
     </el-pagination>
     </div>
@@ -138,7 +133,7 @@
                     <el-option label="否" value="0"></el-option>
                 </el-select>
             </el-form-item>
-            
+
             <el-form-item label="意向等级" >
                 <el-select v-model="form.Level" placeholder="请选择">
                     <el-option label="A级" value="A"></el-option>
@@ -153,7 +148,7 @@
             <el-button type="primary" @click="sendMess">确 定</el-button>
         </div>
     </el-dialog>
- 
+
   </div>
 </template>
 
@@ -195,7 +190,7 @@ export default {
                     picker.$emit('pick', [start, end]);
                     }
                 }],
-                
+
             },
             tableData:[
             ],
@@ -208,150 +203,31 @@ export default {
         }
     },
     computed:{
-     
+
     },
     methods:{
+        // 获取审核列表
+        getAudit(){
+          var params = {
 
-        handleClick(row) {
-         
-        },
-        select(){
-            this.deletArr = this.$refs.multipleTable.selection
-            if(this.deletArr.length){
-                this.isChoose = false
-            }else{
-                this.isChoose = true
+          }
+          this.$get('/sys/el-user/getAuditStore',params).then(res=>{
+            if(res.data.code == 200){
+               console.log(res)
+               this.tableData = res.data.data.list 
+               this.total = res.data.data.total
             }
+          })
         },
-        handleSizeChange(val) {
-           this.pageSize = val
-           this.getMessage()
-        },
-        handleCurrentChange(val) {
-          this.currentPage = val
-           this.getMessage()
-        },
-         deletMessage(){
-            var arr = []
-            this.deletArr.forEach((item,index) =>{
-                arr.push(item.messageId)
-            })
-            this.$http.post('/message/delete',{
-                messageIdList: arr
-            })
-            .then(res=>{
-                if(res.data.code == 200){
-                    this.isChoose = true
-                    this.deletArr = []
-                    this.getMessage()
-                }
-            })
-        },
-        getMessage(){
-            this.$http.post('/message/list',{
-                telephone: this.formInline.telephone,
-                startTime: this.formInline.time != null? this.formInline.time[0] +' '+ '00:00:00':'',
-                endTime:this.formInline.time != null? this.formInline.time[1] +' '+ '23:59:59':'',
-                pageIndex: this.currentPage,
-                pageSize: this.pageSize
-            }) 
-            .then(res=>{
-                if(res.data.code == 200){
-                    this.tableData = res.data.data.list
-                    this.total = res.data.data.total
-                }
-            })
-        },
-        exprot(){
-            this.$http({
-                method:'post',
-                url:'/message/export',
-                responseType:'blob',
-                data:{
-                    telephone: this.formInline.telephone,
-                    startTime: this.formInline.time != null? this.formInline.time[0] + ' '+'00:00:00':'',
-                    endTime: this.formInline.time != null? this.formInline.time[1] + ' '+'23:59:59':'',
-                },
-            })
-            .then(res=>{
-              
-                    // let blob = new Blob([res], {type: "application/vnd.ms-excel"}); // res就是接口返回的文件流了
-
-                    // let objectUrl = URL.createObjectURL(blob);
-
-                    // window.location.href = objectUrl;
-                    
-                        const content = res
-                        const blob = new Blob([content])
-                        const fileName = '导出信息.xlsx'
-                        if ('download' in document.createElement('a')) { // 非IE下载
-                        const elink = document.createElement('a')
-                        elink.download = fileName
-                        elink.style.display = 'none'
-                        elink.href = URL.createObjectURL(blob)
-                        document.body.appendChild(elink)
-                        elink.click()
-                        URL.revokeObjectURL(elink.href) // 释放URL 对象
-                        document.body.removeChild(elink)
-                        } else { // IE10+下载
-                        navigator.msSaveBlob(blob, fileName)
-                        }
-             
-            })
-
-
-            // this.$http.post('/message/export',{
-            //     telephone: this.formInline.telephone,
-            //     startTime: this.formInline.time != null? this.formInline.time[0] + ' '+'00:00:00':'',
-            //     endTime: this.formInline.time != null? this.formInline.time[1] + ' '+'23:59:59':'',
-            // })
-            // .then(res=>{
-            //      this.downLoadXls(res.data.data,'留言列表')
-            // })
-        },
-        downLoadXls(data, filename) {
-        //var blob = new Blob([data], {type: 'application/vnd.ms-excel'})接收的是blob，若接收的是文件流，需要转化一下
-            if (typeof window.chrome !== 'undefined') {
-                // Chrome version
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(data);
-                link.download = filename;
-                link.click();
-            } else if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                // IE version
-                var blob = new Blob([data], { type: 'application/force-download' });
-                window.navigator.msSaveBlob(blob, filename);
-            } else {
-                // Firefox version
-                var file = new File([data], filename, { type: 'application/force-download' });
-                window.open(URL.createObjectURL(file));
-            }
-        },
-        remake(v){
-            this.dialogFormVisible = true
-            this.messageId = v.messageId
+        handleSizeChange(){
+            
         },
         sendMess(){
-            if(this.form.goOn != '' && this.form.Level){
-                this.$http.post('/message/update',{
-                    messageId: this.messageId,
-                    grade: this.form.Level,
-                    followUpStatus: this.form.goOn
-                })
-                .then(res=>{
-                    if(res.data.code == 200){
-                        this.dialogFormVisible = false
-                        this.form ={}
-                        this.getMessage()
-                    }
-                })
-            }else{
-                this.$message({type:'info',message:'请选择是否跟进或者意向等级!'})
-            }
+
         }
     },
     mounted(){
-        this.getMessage()
+        this.getAudit()
     }
 }
 </script>

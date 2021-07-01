@@ -34,10 +34,15 @@ Vue.prototype.GLOBAL = baseUrl
 import VueJsonp from 'vue-jsonp'
 Vue.use(VueJsonp)
 
+var name = localStorage.getItem('name')
+if(name){
+  Vue.prototype.$name = name
+}
+
 
 router.beforeEach((to,from,next)=>{
   if(to.meta.requireAuth){
-      if(sessionStorage.getItem('name')){
+      if(name){
         next()
       }else{
         next({
