@@ -149,10 +149,12 @@ export default {
             }
             this.$post('/sys/auth/login',params)
                 .then(res=>{
+                    console.log(res)
                     if(res.data.code == 200){
-                        this.$router.push('/')
-                        localStorage.setItem('elToken',res.data.data.tokenHead + res.data.data.token)
-                        localStorage.setItem('name',this.loginForm.user_name)
+                      localStorage.setItem('elToken',res.data.data.tokenHead + res.data.data.token)
+                      localStorage.setItem('name',this.loginForm.user_name)
+                      this.$router.push('/')
+
                     }
                 })
                 .catch(err=>{

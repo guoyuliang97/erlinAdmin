@@ -40,9 +40,11 @@ if(name){
 }
 
 
+
 router.beforeEach((to,from,next)=>{
   if(to.meta.requireAuth){
       if(name){
+
         next()
       }else{
         next({

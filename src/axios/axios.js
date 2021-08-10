@@ -5,7 +5,9 @@ export  function post(url,params){
   return new Promise((resolve,reject) => {
     axios.post(baseUrl + url , params).then(
     res=>{
-      resolve(res)
+      if(res.data.code == 200){
+        resolve(res)
+      }
     },
     err=>{
       reject(err)

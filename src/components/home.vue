@@ -22,7 +22,7 @@
                       <i :class="item.icon"></i>
                       <span>{{item.name}}</span>
                     </template>
-                      <el-menu-item style="min-width:0;"  v-for="(items,indexs) in item.children " @click="changeRouter(items,indexs)" :index="items.index">
+                      <el-menu-item style="min-width:0;"  v-for="(items,indexs) in item.children " :key="indexs" @click="changeRouter(items,indexs)" :index="items.index">
                         <i :class="items.icon"></i>
                         <span slot="title">{{items.name}}</span>
                       </el-menu-item>

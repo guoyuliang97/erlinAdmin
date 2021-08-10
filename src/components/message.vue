@@ -6,7 +6,7 @@
             <el-form-item label="电话">
                 <el-input v-model="formInline.telephone" placeholder="电话"></el-input>
             </el-form-item>
-            <el-form-item label="留言时间">
+            <el-form-item label="申请时间">
                 <el-date-picker
                     v-model="formInline.time"
                     type="daterange"
@@ -16,7 +16,7 @@
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
-                    :picker-options="pickerOptions">
+                   >
                 </el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -35,82 +35,110 @@
             border
             highlight-current-row
             style="width:100%"
+
             >
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <el-form >
+                  <el-form-item label="店铺名称:">
+                    <span>{{ scope.row.name }}</span>
+                  </el-form-item>
+                  <el-form-item label="负责人姓名:">
+                    <span>{{ scope.row.directorName }}</span>
+                  </el-form-item>
+                  <el-form-item label="负责人身份证:">
+                    <span>{{ scope.row.directorCart }}</span>
+                  </el-form-item>
+                  <el-form-item label="负责人电话:">
+                    <span>{{ scope.row.contactNumber }}</span>
+                  </el-form-item>
+                  <el-form-item label="营业执照号:">
+                    <span>{{ scope.row.businessLicenseCode }}</span>
+                  </el-form-item>
+                  <el-form-item label="店铺地址:">
+                    <span>{{ scope.row.detailAddress }}</span>
+                  </el-form-item>
+                  <el-form-item label="营业执照:">
+                    <div class="imgBox marginBtm">
+                      <loadimg type="img" :imgSrc="scope.row.businessLicenseImg "></loadimg>
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="店铺LOGO:">
+                    <div class="imgBox">
+                      <loadimg type="img" :imgSrc="scope.row.signBoardImg "></loadimg>
+                    </div>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
+
+
             <el-table-column
-                fixed
-                type="selection"
-                width="55"
+
+            prop="name"
+
+            label="商户名称"
             >
             </el-table-column>
             <el-table-column
-            fixed
-            prop="ip"
-            label="IP"
+
+            prop="directorName"
+            label="负责人姓名"
             >
             </el-table-column>
             <el-table-column
-            prop="telephone"
-            label="电话"
+            prop="directorCart"
+            label="负责人身份证号"
             >
             </el-table-column>
             <el-table-column
-            prop="linkman"
-            label="姓名"
+            prop="contactNumber"
+            label="联系电话"
             >
 
             </el-table-column>
             <el-table-column
-            prop="address"
-            label="城市"
+            prop="detailAddress"
+            label="详细地址"
             >
 
             </el-table-column>
+
             <el-table-column
-            label="选择项目"
+            width="150"
+            label="商铺logo"
             >
-                <template slot-scope="scope">
-                    <el-tag  v-for="(item,index) in scope.row.project.split('@')" >
-                     <span v-if="item == 1||item == 5">电影票房预估</span>
-                     <span v-if="item == 2||item == 6">备案查询</span>
-                     <span v-if="item == 3||item == 7">定档查询</span>
-                     <span v-if="item == 4||item == 8">出品方查询</span>
-                    </el-tag>
-                </template>
+              <template slot-scope="scope" >
+                <Loadimg type="img" class="imgBox"  :imgSrc="scope.row.signBoardImg"></Loadimg>
+              </template>
             </el-table-column>
             <el-table-column
-            prop="movieName"
-            label="电影名称"
-            >
-            </el-table-column>
-            <el-table-column
-            prop="createTime"
-            label="留言时间"
-            >
-            </el-table-column>
-            <el-table-column
-            prop="createTime"
-            label="是否跟进"
-            >
-                <template slot-scope="scope">
-                        <el-tag :type="scope.row.followUpStatus === 0?'danger':scope.row.followUpStatus === 1?'success':''">{{scope.row.followUpStatus === 0?'否':scope.row.followUpStatus === 1?'是':''}}</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column
-            prop="grade"
-            label="意向等级"
+            width="100"
+            label="审核状态"
             >
             <template slot-scope="scope">
-                <el-tag :type="scope.row.grade == 'A'?'success':scope.row.grade == 'B'?'':scope.row.grade == 'C'?'warning':scope.row.grade == 'D'?'danger':''">{{scope.row.grade}}</el-tag>
+                <el-tag :type="scope.row.authStatus == 2?'success':scope.row.authStatus == '1'?'warning':scope.row.authStatus == '-1'?'danger':''">
+                  {{ scope.row.authStatus == 0 ?  '未提交':   scope.row.authStatus == 1 ?'审核中':  scope.row.authStatus == 2 ?'审核通过': '审核不通过'}}
+                </el-tag>
             </template>
             </el-table-column>
             <el-table-column
             fixed="right"
             label="操作"
-            width="100"
+            width="180"
             style="z-index:1"
             >
-            <template slot-scope="scope">
-                <el-button type="text">编辑</el-button>
+            <template slot-scope="scope" class="flexStart">
+              <div v-if="scope.row.authStatus == 1">
+                <el-button type="text" @click="agree" size="mini">通过</el-button>
+                <el-button type="text" @click="unAgree" size="mini">拒绝</el-button>
+              </div>
+              <div v-if="scope.row.authStatus == 2">
+                <el-button type="text" size="mini">已通过</el-button>
+              </div>
+              <div v-if="scope.row.authStatus == -1">
+                <el-button type="text" size="mini">审核不通过</el-button>
+              </div>
             </template>
             </el-table-column>
         </el-table>
@@ -124,25 +152,9 @@
       :total="total">
     </el-pagination>
     </div>
+    
+    <el-dialog title="审核详情"  :modal-append-to-body='false' :visible.sync="dialogFormVisible">
 
-    <el-dialog title="编辑" :modal-append-to-body='false' :visible.sync="dialogFormVisible">
-        <el-form :model="form">
-            <el-form-item label="是否跟进">
-                <el-select v-model="form.goOn" placeholder="请选择">
-                    <el-option label="是" value="1"></el-option>
-                    <el-option label="否" value="0"></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="意向等级" >
-                <el-select v-model="form.Level" placeholder="请选择">
-                    <el-option label="A级" value="A"></el-option>
-                    <el-option label="B级" value="B"></el-option>
-                     <el-option label="C级" value="C"></el-option>
-                    <el-option label="D级" value="D"></el-option>
-                </el-select>
-            </el-form-item>
-        </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
             <el-button type="primary" @click="sendMess">确 定</el-button>
@@ -153,44 +165,16 @@
 </template>
 
 <script>
+
+import Loadimg from '../public/loadingImg.vue'
 export default {
     data(){
         return {
-            dialogFormVisible2:false,
-            form2:{},
             dialogFormVisible:false,
-            form:{},
+
             formInline:{
                 telephone:'',
                 time:null
-            },
-            pickerOptions: {
-                shortcuts: [{
-                    text: '最近一周',
-                    onClick(picker) {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                    picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近一个月',
-                    onClick(picker) {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                    picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近三个月',
-                    onClick(picker) {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                    picker.$emit('pick', [start, end]);
-                    }
-                }],
-
             },
             tableData:[
             ],
@@ -199,8 +183,13 @@ export default {
             pageSize:10,
             total:0,
             messageId:'',
-            deletArr:[]
+            deletArr:[],
+
         }
+    },
+    components:{
+      Loadimg
+   
     },
     computed:{
 
@@ -214,16 +203,50 @@ export default {
           this.$get('/sys/el-user/getAuditStore',params).then(res=>{
             if(res.data.code == 200){
                console.log(res)
-               this.tableData = res.data.data.list 
+               this.tableData = res.data.data.list
                this.total = res.data.data.total
             }
           })
         },
         handleSizeChange(){
-            
+
         },
         sendMess(){
 
+        },
+        lookMore(row){
+          this.dialogFormVisible = !this.dialogFormVisible
+        },
+        unAgree(){ //拒绝
+          this.$confirm('此操作将拒绝商家入驻申请, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+
+          }).then(() => {
+
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });
+          });
+
+        },
+        agree(){ //同意
+          this.$confirm('此操作将同意商家入驻申请, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+
+          }).then(() => {
+
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });
+          });
         }
     },
     mounted(){
@@ -232,6 +255,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

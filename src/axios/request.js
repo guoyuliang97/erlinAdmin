@@ -12,7 +12,7 @@ axios.interceptors.request.use(
     let token =localStorage.getItem('elToken')
     if (token) {
       config.headers['Authorization'] = token
-     
+
     }
 
     return config
@@ -32,8 +32,11 @@ axios.interceptors.response.use(res => {
             })
             router.push('/login')
             break;
+  
+            
     }
     return res
+
 },error =>{
     console.log(error)
     LoadingServe.close()

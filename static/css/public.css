@@ -7,6 +7,7 @@
 }
 .sameBgColor{
   background-color: #ff5511;
+  color:#fff
 }
 .sameContent{
     text-align:left;
@@ -53,4 +54,14 @@
 }
 .positionFix{
     position: fixed;
+}
+.imgBox{
+  width:100px;
+  height: 100px;
+}
+.marginBtm{
+  margin-bottom: 20px;
+}
+.marginTm{
+  margin-top: 20px;
 }
