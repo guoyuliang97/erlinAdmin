@@ -32,7 +32,7 @@
       <!--底部操作工具按钮-->
       <div class="footer-btn">
         <div class="scope-btn">
-          <label class="btn" for="uploads">选择封面</label>
+          <label class="btn" for="uploads">选择图片</label>
           <input type="file" id="uploads" style="position:absolute; clip:rect(0 0 0 0);" accept="image/png, image/jpeg, image/gif, image/jpg" @change="selectImg($event)">
           <el-button size="mini" type="danger" plain icon="el-icon-zoom-in" @click="changeScale(1)">放大</el-button>
           <el-button size="mini" type="danger" plain icon="el-icon-zoom-out" @click="changeScale(-1)">缩小</el-button>
@@ -40,7 +40,7 @@
           <el-button size="mini" type="danger" plain @click="rotateRight">↻ 右旋转</el-button>
         </div>
         <div class="upload-btn">
-          <el-button size="mini" type="success" @click="uploadImg('blob')">上传封面 <i class="el-icon-upload"></i></el-button>
+          <el-button size="mini" type="success" @click="uploadImg('blob')">上传图片 <i class="el-icon-upload"></i></el-button>
         </div>
       </div>
     </div>
@@ -117,7 +117,7 @@ export default {
     selectImg (e) {
 
       let file = e.target.files[0]
-      console.log(file)
+   
       this.fileName = file.name
       if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
         this.$message({

@@ -94,6 +94,20 @@ export default new Router({
           meta:{
             requireAuth:true
           }
+        },
+        {
+          path: '/casCard',
+          component: resolve => require(['@/public/casCard'],resolve),
+          meta:{
+            requireAuth:true
+          }
+        },
+        {
+          path: '/fenlei',
+          component: resolve => require(['@/components/fenlei'],resolve),
+          meta:{
+            requireAuth:true
+          }
         }
       ]
     },

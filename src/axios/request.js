@@ -12,9 +12,8 @@ axios.interceptors.request.use(
     let token =localStorage.getItem('elToken')
     if (token) {
       config.headers['Authorization'] = token
-
+      config.headers['content-type'] = 'application/json'
     }
-
     return config
   },
   error => {
@@ -30,10 +29,10 @@ axios.interceptors.response.use(res => {
             Message.error({
                 message:res.data.message
             })
-            router.push('/login')
+
             break;
-  
-            
+
+
     }
     return res
 

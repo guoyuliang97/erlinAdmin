@@ -30,7 +30,7 @@
                       v-model="formInline.time"
                       type="daterange"
                       align="right"
-                      value-format="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd HH:mm:ss"
                       unlink-panels
                       range-separator="至"
                       start-placeholder="开始日期"
@@ -39,7 +39,7 @@
                   </el-date-picker>
               </el-form-item>
               <el-form-item>
-                  <el-button type="primary">查询</el-button>
+                  <el-button type="primary" @click="getShop">查询</el-button>
               </el-form-item>
           </el-form>
       </div>
@@ -135,8 +135,8 @@
             <template slot-scope="scope" class="flexStart">
               <el-button type="text"  size="mini">下架</el-button>
               <el-button type="text"  size="mini">上架</el-button>
-              <el-button type="text"  size="mini">删除</el-button>
-              <el-button type="text"  size="mini">修改</el-button>
+              <el-button type="text" @click="delateShop(scope.row)"  size="mini">删除</el-button>
+              <el-button type="text" @click="rediret(scope.row)" size="mini">修改</el-button>
             </template>
             </el-table-column>
           </el-table>
@@ -158,7 +158,7 @@
         >
         <el-form ref="form" :model="shopForm" :inline="true"  label-position="left" >
 
-          <el-form-item label="	商品名称">
+          <el-form-item label="商品名称">
             <el-input class="input_width" type="text" maxlength="20" v-model="shopForm.goodsName"></el-input>
           </el-form-item>
           <el-form-item label="商品别名">
@@ -199,12 +199,9 @@
             </el-form-item>
           </div>
           <div class="textCenter">
-            <el-form-item>
-              <el-button type="primary" @click="onSubmit">立即创建</el-button>
-              <el-button @click="abolish">取消</el-button>
-            </el-form-item>
+            <el-button type="primary" @click="onSubmit">{{shopForm.id? "立即修改": "立即创建"}}</el-button>
+            <el-button @click="abolish">取消</el-button>
           </div>
-
         </el-form>
       </el-dialog>
       <el-dialog
@@ -257,19 +254,22 @@ export default {
   methods:{
     getShop(){
       var params = {
-          categoryId: this.formInline.categoryId,
-          goodsName: this.formInline.goodsName,
-          guidePriceMax: this.formInline.guidePriceMax,
-          guidePriceMin: this.formInline.guidePriceMin,
-          isDelete: this.formInline.isDelete,
-          storeId: this.formInline.storeId
+          "categoryId": this.formInline.categoryId,
+          "goodsName": this.formInline.goodsName,
+          "guidePriceMax": this.formInline.guidePriceMax,
+          "guidePriceMin": this.formInline.guidePriceMin,
+          "isDelete": this.formInline.isDelete,
+          "storeId": this.formInline.storeId,
+
       }
       if(this.formInline.time){
         params.ctimeMax = this.formInline.time[1]
         params.ctimeMin = this.formInline.time[0]
       }
-      this.$post('/sys/goods/manage/list',params).then(res=>{
-        console.log(res)
+
+
+      params = JSON.stringify(params)
+      this.$post('/sys/goods/manage/list?pageSize='+ this.pageSize + '&pageNo=' + this.currentPage,params).then(res=>{
           var data = res.data.data
           this.tableData = data.list
           this.total = data.total
@@ -279,12 +279,11 @@ export default {
       this.isShop = true
     },
     handleCurrentChange(e){
-      console.log(e)
       this.currentPage = e
+      this.getShop()
     },
     onSubmit(){
       var params = {
-        param:{
           "categoryId": this.shopForm.categoryId,
           "goodsAs": this.shopForm.goodsAs,
           "goodsBrand": this.shopForm.goodsBrand,
@@ -296,24 +295,75 @@ export default {
           "goodsSpec": this.shopForm.goodsSpec,
           "goodsUnit": this.shopForm.goodsUnit,
           "guidePrice": Number(this.shopForm.guidePrice) ,
-        }
       }
-      this.$post('/sys/goods/manage/add',params).then(res=>{
-        this.abolish()
-        this.$message({
-          message: '创建成功',
-          type: 'success'
+      if(this.shopForm.id){
+        params.id = this.shopForm.id
+        this.xiugaiHuod(params)
+      }else{
+        this.$post('/sys/goods/manage/add',params).then(res=>{
+          this.abolish()
+          this.$message({
+            message: '创建成功',
+            type: 'success'
+          })
         })
-      })
+      }
     },
     handleUploadSuccess(res){
-      console.log(res)
       this.shopForm.goodsImg = res.url
       this.cropperModel = false
     },
     abolish(){
       this.isShop = false
       this.shopForm = {}
+    },
+    delateShop(row){
+      this.$confirm('此操作将删除该商品模板, 是否继续?','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() =>{
+        this.$dele('/sys/goods/manage/'+row.id+'/del').then(res=>{
+          console.log(res)
+          this.$message({
+            message: '删除成功!',
+            type: 'success'
+          })
+          this.getShop()
+        })
+      })
+      .catch(() =>{
+        this.$message({
+          message: '已取消!',
+          type: 'info'
+        })
+      })
+    },
+    rediret(row){
+      this.isShop = true
+      this.shopForm = {
+        "categoryId": row.categoryId,
+        "goodsAs": row.goodsAs,
+        "goodsBrand": row.goodsBrand,
+        "goodsDesc": row.goodsDesc,
+        "goodsImg": row.goodsImg,
+        "goodsName": row.goodsName,
+        "goodsRemark": row.goodsRemark,
+        "goodsSeq": row.goodsSeq,
+        "goodsSpec": row.goodsSpec,
+        "goodsUnit": row.goodsUnit,
+        "guidePrice": row.guidePrice,
+        "id": row.id
+      }
+    },
+    xiugaiHuod(params){
+      this.$post('/sys/goods/manage/update',params).then(res=>{
+          this.$message({
+            message: '修改成功!',
+            type: 'success'
+          })
+          this.abolish()
+      })
     }
   },
   mounted(){

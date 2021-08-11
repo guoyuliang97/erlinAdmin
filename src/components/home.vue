@@ -113,6 +113,12 @@ export default {
               // },
           ]
         },
+        {
+          name:'商品分类',
+          router:'/fenlei',
+          index:'4',
+          icon:'el-icon-chat-line-round'
+        },
         // {
         //   name:'常规管理',
         //   router:'/control',
